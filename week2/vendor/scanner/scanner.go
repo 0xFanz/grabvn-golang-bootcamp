@@ -2,12 +2,13 @@ package scanner
 
 import (
 	"bufio"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sync"
 )
+
+var reg, _ = regexp.Compile("[^a-zA-Z0-9]+")
 
 // GetPaths scan all files in folder then return to array
 func GetPaths(dir string) []string {
@@ -44,10 +45,6 @@ func SendWords(wg *sync.WaitGroup, path string, wordBroker chan string) {
 }
 
 func filterChar(char string) string {
-	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
-	if err != nil {
-		log.Fatal(err)
-	}
 	return reg.ReplaceAllString(char, "")
 }
 
