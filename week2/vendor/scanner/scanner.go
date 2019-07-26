@@ -2,8 +2,10 @@ package scanner
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sync"
 )
 
@@ -35,10 +37,18 @@ func SendWords(wg *sync.WaitGroup, path string, wordBroker chan string) {
 	scanner.Split(bufio.ScanWords)
 
 	for scanner.Scan() {
-		wordBroker <- scanner.Text()
+		wordBroker <- filterChar(scanner.Text())
 	}
 	scanErr := scanner.Err()
 	check(scanErr)
+}
+
+func filterChar(char string) string {
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return reg.ReplaceAllString(char, "")
 }
 
 func check(e error) {
